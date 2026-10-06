@@ -39,12 +39,12 @@ jobs:
           set -euo pipefail
           jdk_home=/usr/lib/jvm/java-21-amazon-corretto
           if [ ! -x "$jdk_home/bin/java" ]; then
-            jdk_home='%teamcity.build.tempDir%/corretto-21'
+            jdk_home='%system.teamcity.build.tempDir%/corretto-21'
             mkdir -p "$jdk_home"
             curl --fail --location --retry 3 \
               https://corretto.aws/downloads/latest/amazon-corretto-21-x64-linux-jdk.tar.gz \
-              --output '%teamcity.build.tempDir%/corretto-21.tar.gz'
-            tar -xzf '%teamcity.build.tempDir%/corretto-21.tar.gz' \
+              --output '%system.teamcity.build.tempDir%/corretto-21.tar.gz'
+            tar -xzf '%system.teamcity.build.tempDir%/corretto-21.tar.gz' \
               --strip-components=1 -C "$jdk_home"
           fi
           "$jdk_home/bin/java" -version
