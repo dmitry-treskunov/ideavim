@@ -29,6 +29,11 @@ teamcity pipeline validate .teamcity/pr-verification.yml
 teamcity pipeline push Sandbox_IdeaVimPilot_PrVerification .teamcity/pr-verification.yml
 ```
 
+After pushing, check that the Pull Requests and Commit Status Publisher features
+are enabled in the pipeline's build configuration. With TeamCity CLI 1.5.0 on
+this server, a YAML push disabled both features; they had to be re-enabled with
+their existing settings before PR discovery and GitHub status updates resumed.
+
 PR discovery, the VCS trigger (PRs only, 30-second quiet period), and the GitHub
 Commit Status Publisher are configured on the server separately from this YAML.
 The trigger uses the logical branch filter `-:*` / `+:pull/*`; the Pull Requests
