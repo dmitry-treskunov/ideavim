@@ -1,0 +1,55 @@
+version: 1
+parameters:
+  env.CI: 'true'
+  env.ORG_GRADLE_PROJECT_downloadIdeaSources: 'false'
+  env.ORG_GRADLE_PROJECT_instrumentPluginCode: 'false'
+  env.GRADLE_USER_HOME: '%teamcity.build.checkoutDir%/.teamcity-cache/gradle'
+jobs:
+  Tests:
+    name: PR tests (JDK 21)
+    runs-on: Linux-Medium
+    allow-reuse: false
+    repositories:
+      - main:
+          path: .
+    features:
+      - type: build-cache
+        name: ideavim-pr-gradle-linux-jdk21-v1
+        use: true
+        publish: true
+        publish-only-changed: true
+        rules: |-
+          .teamcity-cache/gradle/caches
+          .teamcity-cache/gradle/wrapper
+      - type: xml-report
+        report-type: junit
+        rules: '**/build/test-results/test/TEST-*.xml'
+    files-publication:
+      - path: 'build/reports/problems/problems-report.html'
+        publish-artifact: true
+        share-with-jobs: false
+    steps:
+      - name: Set up Amazon Corretto JDK 21
+        type: script
+        script-content: |-
+          #!/usr/bin/env bash
+          set -euo pipefail
+          jdk_home=/usr/lib/jvm/java-21-amazon-corretto
+          if [ ! -x "$jdk_home/bin/java" ]; then
+            jdk_home='%system.teamcity.build.tempDir%/corretto-21'
+            mkdir -p "$jdk_home"
+            curl --fail --location --retry 3 \
+              https://corretto.aws/downloads/latest/amazon-corretto-21-x64-linux-jdk.tar.gz \
+              --output '%system.teamcity.build.tempDir%/corretto-21.tar.gz'
+            tar -xzf '%system.teamcity.build.tempDir%/corretto-21.tar.gz' \
+              --strip-components=1 -C "$jdk_home"
+          fi
+          "$jdk_home/bin/java" -version
+          echo "##teamcity[setParameter name='env.JAVA_HOME' value='$jdk_home']"
+      - name: Run PR verification tests
+        type: script
+        script-content: |-
+          #!/usr/bin/env bash
+          set -euo pipefail
+          export PATH="$JAVA_HOME/bin:$PATH"
+          ./gradlew test -x :tests:property-tests:test -x :tests:long-running-tests:test
