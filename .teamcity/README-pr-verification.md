@@ -31,5 +31,7 @@ teamcity pipeline push Sandbox_IdeaVimPilot_PrVerification .teamcity/pr-verifica
 
 PR discovery, the VCS trigger (PRs only, 30-second quiet period), and the GitHub
 Commit Status Publisher are configured on the server separately from this YAML.
+The trigger uses the logical branch filter `-:*` / `+:pull/*`; the Pull Requests
+feature filters target branches with `+:refs/heads/master`.
 
 The GitHub Actions workflow remains available for comparison during the pilot.
