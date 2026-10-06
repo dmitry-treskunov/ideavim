@@ -25,10 +25,7 @@ jobs:
         report-type: junit
         rules: '**/build/test-results/test/TEST-*.xml'
     files-publication:
-      - path: '**/build/reports/**'
-        publish-artifact: true
-        share-with-jobs: false
-      - path: '**/build/test-results/test/TEST-*.xml'
+      - path: 'build/reports/problems/problems-report.html'
         publish-artifact: true
         share-with-jobs: false
     steps:

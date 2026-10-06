@@ -8,8 +8,11 @@ Property-based and long-running tests remain excluded.
 
 The pipeline definition is in `pr-verification.yml`. It uses a Linux-Medium
 agent, Amazon Corretto JDK 21 and a shared Gradle dependency/wrapper cache.
-JUnit XML is imported into TeamCity's Tests view; HTML reports and XML results
-are published as build artifacts, including when the test command fails.
+JUnit XML is imported into TeamCity's Tests view. Only Gradle's
+`build/reports/problems/problems-report.html` is published as a build artifact
+when it exists, including when the test command fails. HTML test reports and
+individual XML files are not published, avoiding thousands of duplicate report
+files and the server's artifact-count limit.
 
 The server-side GitHub integration discovers pull requests targeting `master`,
 automatically triggers verification, and publishes the result back to GitHub.
